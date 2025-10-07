@@ -1,7 +1,7 @@
 import DOMPurify from 'dompurify';
 
 document.addEventListener('DOMContentLoaded', () => {
-	const allSearchbars = document.querySelectorAll('.rest-api-searchbar');
+	const allSearchbars = document.querySelectorAll('.wp-rest-api-search');
 	allSearchbars.forEach((element) => {
 		const postTypes = JSON.parse(element.dataset.postTypes || '["post"]');
 		initializeSearch(element, postTypes);
@@ -10,42 +10,55 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function initializeSearch(element, postTypes) {
 	const input = element.querySelector('input');
+	const clearBtn = element.querySelector('.search-clear');
 	const resultsContainer = element.querySelector('.search-results');
 
 	let debounceTimeout;
 	let abortController;
 
 	input.addEventListener('input', handleChange);
+	clearBtn.addEventListener('click', handleClear);
+	document.addEventListener('click', handleClickOutside);
+
+	function handleClear() {
+		input.value = '';
+		resultsContainer.textContent = '';
+		clearBtn.classList.remove('visible');
+	}
+
+	function handleClickOutside(e) {
+		if (!element.contains(e.target)) {
+			resultsContainer.textContent = '';
+		}
+	}
 
 	function handleChange(event) {
 		clearTimeout(debounceTimeout);
 
-		const rawValue = event.target.value.trim();
+		const query = event.target.value.trim();
 
-		// Only search if input has at least 3 characters
-		if (rawValue.length < 3) {
+		// Show/hide clear button
+		clearBtn.classList.toggle('visible', query.length > 0);
+
+		// Only search if at least 3 characters
+		if (query.length < 3) {
 			resultsContainer.textContent = '';
 			return;
 		}
 
-		// debounce: wait 600ms after user stops typing
 		debounceTimeout = setTimeout(async () => {
 			try {
-				// cancel previous request if still pending
-				if (abortController) {
-					abortController.abort();
-				}
+				if (abortController) abortController.abort();
 				abortController = new AbortController();
 
-				// render spinner
 				resultsContainer.innerHTML = getSpinner();
 
-				const results = await fetchPosts(rawValue, postTypes, abortController.signal);
+				const results = await fetchPosts(query, postTypes, abortController.signal);
 
 				if (results.length) {
 					resultsContainer.innerHTML = generateHTML(results);
 				} else {
-					resultsContainer.textContent = 'Nothing found';
+					resultsContainer.innerHTML = '<div class="search-no-results">Nothing found</div>';
 				}
 			} catch (error) {
 				if (error.name !== 'AbortError') {
@@ -60,21 +73,21 @@ function initializeSearch(element, postTypes) {
 async function fetchPosts(query, postTypes, signal) {
 	const cleanValue = encodeURIComponent(query);
 
-	// Build queries for each post type and run in parallel
 	const requests = postTypes.map((type) =>
-		fetch(`/wp-json/wp/v2/${type}?search=${cleanValue}&_embed`, { signal })
+		fetch(`/wp-json/wp/v2/${type}?search=${cleanValue}&_embed`, {signal}),
 	);
 
 	const responses = await Promise.all(requests);
 
-	const jsonData = await Promise.all(responses.map((res) => {
-		if (!res.ok) {
-			throw new Error(`HTTP error. Status: ${res.status}`);
-		}
-		return res.json();
-	}));
+	const jsonData = await Promise.all(
+		responses.map((res) => {
+			if (!res.ok) {
+				throw new Error(`HTTP error. Status: ${res.status}`);
+			}
+			return res.json();
+		}),
+	);
 
-	// Flatten results into one array
 	return jsonData.flat();
 }
 
@@ -87,8 +100,7 @@ function generateHTML(data) {
 		if (item._embedded && item._embedded['wp:featuredmedia'] && item._embedded['wp:featuredmedia'][0]) {
 			const img = item._embedded['wp:featuredmedia'][0];
 			const imgUrl =
-				img.media_details?.sizes?.thumbnail?.source_url ||
-				img.source_url;
+				img.media_details?.sizes?.thumbnail?.source_url || img.source_url;
 
 			if (imgUrl) {
 				imageHtml = `<img alt src="${imgUrl}" loading="lazy" />`;
@@ -98,9 +110,7 @@ function generateHTML(data) {
 		output += `
 			<div class="search-result-item">
 				${imageHtml}
-				<h3>
-					<a href="${item.link}">${item.title.rendered}</a>
-				</h3>
+				<h3><a href="${item.link}">${item.title.rendered}</a></h3>
 			</div>
 		`;
 	});
@@ -110,7 +120,7 @@ function generateHTML(data) {
 
 function getSpinner() {
 	return `
-		<div class="spinner" aria-hidden="true" style="display:flex;justify-content:center;padding:1rem;">
+		<div class="spinner" aria-hidden="true">
 			<svg width="32" height="32" viewBox="0 0 38 38" xmlns="http://www.w3.org/2000/svg" stroke="#333">
 				<g fill="none" fill-rule="evenodd">
 					<g transform="translate(1 1)" stroke-width="2">
