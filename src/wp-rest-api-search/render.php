@@ -8,7 +8,7 @@
 	$post_types = isset( $attributes['postTypes'] ) && is_array( $attributes['postTypes'] )
 		? $attributes['postTypes']
 		: [];
-
+	$unique_id  = isset( $attributes['uniqueId'] ) ? sanitize_html_class( $attributes['uniqueId'] ) : uniqid();
 	$data_attrs = array(
 		'class'           => 'wp-rest-api-search',
 		'data-post-types' => esc_attr( wp_json_encode( $post_types ) ),
@@ -19,6 +19,7 @@
 	<div class="searchbar">
 		<input
 			type="text"
+			id="<?php echo esc_attr( 'wp-rest-api-search-' . $unique_id ); ?>"
 			aria-label="Search input"
 			placeholder="Search…"
 		/>
@@ -35,5 +36,5 @@
 		</button>
 	</div>
 
-	<div class="search-results"></div>
+	<div class="search-results" aria-labelledby="<?php echo esc_attr( 'wp-rest-api-search-' . $unique_id ); ?>"></div>
 </div>

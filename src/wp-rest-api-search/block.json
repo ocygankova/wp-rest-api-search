@@ -21,6 +21,9 @@
 		"postTypes": {
 			"type": "array",
 			"default": []
+		},
+		"uniqueId": {
+			"type": "string"
 		}
 	}
 }

@@ -5,12 +5,21 @@ import {CheckboxControl, Button, Spinner, Notice} from '@wordpress/components';
 import apiFetch from '@wordpress/api-fetch';
 import './editor.scss';
 
+const generateId = () => Math.random().toString(36).substr(2, 9);
+
 export default function Edit({attributes, setAttributes}) {
 	const [postTypes, setPostTypes] = useState([]);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState(null);
 	const [selected, setSelected] = useState(attributes.postTypes);
-	const [dirty, setDirty] = useState(false); // track unsaved changes
+	const [dirty, setDirty] = useState(false);
+
+	// Generate uniqueId once, when block is first added
+	useEffect(() => {
+		if (!attributes.uniqueId) {
+			setAttributes({uniqueId: generateId()});
+		}
+	}, []);
 
 	useEffect(() => {
 		async function fetchPostTypes() {
