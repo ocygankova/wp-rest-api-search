@@ -7,9 +7,129 @@
  *
  * Replace them with your own styles or remove the file completely.
  */
-.wp-block-create-block-wp-rest-api-search {
-  background-color: #a7e1f5;
-  padding: 10px;
+.wp-rest-api-search {
+  position: relative;
+  width: 100%;
+  font-family: system-ui, sans-serif;
+  color: #333;
+  /* Search bar container */
+}
+.wp-rest-api-search .searchbar {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+.wp-rest-api-search {
+  /* Search input */
+}
+.wp-rest-api-search input {
+  width: 100%;
+  padding: 0.75rem 2.5rem 0.75rem 1rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background: #fff;
+  font-size: 1rem;
+  color: #333;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+.wp-rest-api-search input:focus {
+  border-color: #666;
+}
+.wp-rest-api-search {
+  /* Clear button */
+}
+.wp-rest-api-search .search-clear {
+  position: absolute;
+  right: 0.5rem;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+}
+.wp-rest-api-search .search-clear svg {
+  width: 16px;
+  height: 16px;
+  stroke: #666;
+  fill: #666;
+}
+.wp-rest-api-search .search-clear.visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+.wp-rest-api-search {
+  /* Results dropdown */
+}
+.wp-rest-api-search .search-results {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  width: 100%;
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  z-index: 10;
+  max-height: 400px;
+  overflow-y: auto;
+  box-sizing: border-box;
+}
+.wp-rest-api-search {
+  /* Individual result item */
+}
+.wp-rest-api-search .search-result-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid #eee;
+  transition: background 0.2s ease;
+}
+.wp-rest-api-search .search-result-item:hover {
+  background: #f7f7f7;
+}
+.wp-rest-api-search .search-result-item img {
+  width: 40px;
+  height: 40px;
+  -o-object-fit: cover;
+     object-fit: cover;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+.wp-rest-api-search .search-result-item h3 {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+.wp-rest-api-search .search-result-item h3 a {
+  text-decoration: none;
+  color: #222;
+}
+.wp-rest-api-search .search-result-item h3 a:hover {
+  text-decoration: underline;
+}
+.wp-rest-api-search {
+  /* Spinner */
+}
+.wp-rest-api-search .spinner {
+  padding: 1rem;
+  display: flex;
+  justify-content: center;
+}
+.wp-rest-api-search {
+  /* Nothing found message */
+}
+.wp-rest-api-search .search-no-results {
+  padding: 0.75rem 1rem;
+  font-size: 1rem;
+  color: #555;
 }
 
 /*# sourceMappingURL=style-index.css.map*/

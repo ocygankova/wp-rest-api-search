@@ -8,7 +8,7 @@
   \*******************************************/
 /***/ ((module) => {
 
-module.exports = /*#__PURE__*/JSON.parse('{"$schema":"https://schemas.wp.org/trunk/block.json","apiVersion":3,"name":"create-block/wp-rest-api-search","version":"0.1.0","title":"Rest API Searchbar","category":"widgets","icon":"search","description":"Live searchbar by post types, utilizing WordPress REST API.","example":{},"supports":{"html":false},"textdomain":"wp-rest-api-search","editorScript":"file:./index.js","editorStyle":"file:./index.css","style":"file:./style-index.css","render":"file:./render.php","viewScript":"file:./view.js","attributes":{"postTypes":{"type":"array","default":[]}}}');
+module.exports = /*#__PURE__*/JSON.parse('{"$schema":"https://schemas.wp.org/trunk/block.json","apiVersion":3,"name":"create-block/wp-rest-api-search","version":"0.1.0","title":"Live Searchbar","category":"widgets","icon":"search","description":"Live searchbar block. Search by post types, utilizing WordPress REST API.","example":{},"supports":{"html":false},"textdomain":"wp-rest-api-search","editorScript":"file:./index.js","editorStyle":"file:./index.css","style":"file:./style-index.css","render":"file:./render.php","viewScript":"file:./view.js","attributes":{"postTypes":{"type":"array","default":[]},"uniqueId":{"type":"string"}}}');
 
 /***/ }),
 
@@ -42,6 +42,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
+const generateId = () => Math.random().toString(36).substr(2, 9);
 function Edit({
   attributes,
   setAttributes
@@ -50,8 +51,16 @@ function Edit({
   const [loading, setLoading] = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.useState)(true);
   const [error, setError] = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.useState)(null);
   const [selected, setSelected] = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.useState)(attributes.postTypes);
-  const [dirty, setDirty] = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.useState)(false); // track unsaved changes
+  const [dirty, setDirty] = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.useState)(false);
 
+  // Generate uniqueId once, when block is first added
+  (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.useEffect)(() => {
+    if (!attributes.uniqueId) {
+      setAttributes({
+        uniqueId: generateId()
+      });
+    }
+  }, []);
   (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.useEffect)(() => {
     async function fetchPostTypes() {
       try {

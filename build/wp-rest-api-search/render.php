@@ -7,17 +7,34 @@
 
 	$post_types = isset( $attributes['postTypes'] ) && is_array( $attributes['postTypes'] )
 		? $attributes['postTypes']
-		: [ 'post' ];
-
+		: [];
+	$unique_id  = isset( $attributes['uniqueId'] ) ? sanitize_html_class( $attributes['uniqueId'] ) : uniqid();
 	$data_attrs = array(
-		'class'           => 'rest-api-searchbar',
+		'class'           => 'wp-rest-api-search',
 		'data-post-types' => esc_attr( wp_json_encode( $post_types ) ),
 	);
 ?>
 
 <div <?php echo get_block_wrapper_attributes( $data_attrs ); ?>>
-	<label>
-		<input type="search" placeholder="<?php esc_attr_e( 'Search…', 'wp-rest-api-search' ); ?>" />
-	</label>
-	<div class="search-results"></div>
+	<div class="searchbar">
+		<input
+			type="text"
+			id="<?php echo esc_attr( 'wp-rest-api-search-' . $unique_id ); ?>"
+			aria-label="Search input"
+			placeholder="Search…"
+		/>
+
+		<button
+			type="button"
+			class="search-clear"
+			aria-label="Clear search"
+		>
+			<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+				<path
+					d="M14.348 5.652a.5.5 0 0 0-.707 0L10 9.293 6.36 5.652a.5.5 0 1 0-.707.707L9.293 10l-3.64 3.64a.5.5 0 1 0 .707.707L10 10.707l3.64 3.64a.5.5 0 0 0 .707-.707L10.707 10l3.64-3.64a.5.5 0 0 0 0-.708z"/>
+			</svg>
+		</button>
+	</div>
+
+	<div class="search-results" aria-labelledby="<?php echo esc_attr( 'wp-rest-api-search-' . $unique_id ); ?>"></div>
 </div>

@@ -6,10 +6,10 @@ return array(
 		'apiVersion' => 3,
 		'name' => 'create-block/wp-rest-api-search',
 		'version' => '0.1.0',
-		'title' => 'Rest API Searchbar',
+		'title' => 'Live Searchbar',
 		'category' => 'widgets',
 		'icon' => 'search',
-		'description' => 'Live searchbar by post types, utilizing WordPress REST API.',
+		'description' => 'Live searchbar block. Search by post types, utilizing WordPress REST API.',
 		'example' => array(
 			
 		),
@@ -28,6 +28,9 @@ return array(
 				'default' => array(
 					
 				)
+			),
+			'uniqueId' => array(
+				'type' => 'string'
 			)
 		)
 	)
