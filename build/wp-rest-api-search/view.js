@@ -1451,29 +1451,40 @@ function initializeSearch(element, postTypes) {
   const resultsContainer = element.querySelector('.search-results');
   let debounceTimeout;
   let abortController;
+  let lastResultsHTML = ''; // store last results to re-show on focus
+
   input.addEventListener('input', handleChange);
+  input.addEventListener('focus', handleFocus);
   clearBtn.addEventListener('click', handleClear);
   document.addEventListener('click', handleClickOutside);
   function handleClear() {
     input.value = '';
     resultsContainer.textContent = '';
+    resultsContainer.classList.remove('visible');
     clearBtn.classList.remove('visible');
+    lastResultsHTML = '';
   }
   function handleClickOutside(e) {
     if (!element.contains(e.target)) {
-      resultsContainer.textContent = '';
+      resultsContainer.classList.remove('visible');
+    }
+  }
+  function handleFocus() {
+    if (input.value.trim().length >= 3 && lastResultsHTML) {
+      resultsContainer.innerHTML = lastResultsHTML;
+      resultsContainer.classList.add('visible');
     }
   }
   function handleChange(event) {
     clearTimeout(debounceTimeout);
     const query = event.target.value.trim();
-
-    // Show/hide clear button
     clearBtn.classList.toggle('visible', query.length > 0);
 
     // Only search if at least 3 characters
     if (query.length < 3) {
       resultsContainer.textContent = '';
+      resultsContainer.classList.remove('visible');
+      lastResultsHTML = '';
       return;
     }
     debounceTimeout = setTimeout(async () => {
@@ -1481,15 +1492,22 @@ function initializeSearch(element, postTypes) {
         if (abortController) abortController.abort();
         abortController = new AbortController();
         resultsContainer.innerHTML = getSpinner();
+        resultsContainer.classList.add('visible');
         const results = await fetchPosts(query, postTypes, abortController.signal);
         if (results.length) {
-          resultsContainer.innerHTML = generateHTML(results);
+          const html = generateHTML(results);
+          resultsContainer.innerHTML = html;
+          resultsContainer.classList.add('visible');
+          lastResultsHTML = html;
         } else {
           resultsContainer.innerHTML = '<div class="search-no-results">Nothing found</div>';
+          resultsContainer.classList.add('visible');
+          lastResultsHTML = '';
         }
       } catch (error) {
         if (error.name !== 'AbortError') {
           resultsContainer.textContent = 'Something went wrong. Please try again.';
+          resultsContainer.classList.add('visible');
           console.error(error);
         }
       }
@@ -1522,10 +1540,10 @@ function generateHTML(data) {
       }
     }
     output += `
-			<div class="search-result-item">
+			<a class="search-result-item" href="${item.link}">
 				${imageHtml}
-				<h3><a href="${item.link}">${item.title.rendered}</a></h3>
-			</div>
+				<h3>${item.title.rendered}</h3>
+			</a>
 		`;
   });
   return dompurify__WEBPACK_IMPORTED_MODULE_0__["default"].sanitize(output);
