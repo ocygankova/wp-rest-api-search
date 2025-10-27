@@ -5,6 +5,9 @@ on:
     branches:
       - master  # Run when pushing to master
 
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
