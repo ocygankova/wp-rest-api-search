@@ -3,7 +3,7 @@ name: Build Plugin and Push to Build Branch
 on:
   push:
     branches:
-      - master  # Runs whenever you push to master
+      - master  # Run when pushing to master
 
 jobs:
   build:
@@ -27,8 +27,10 @@ jobs:
       - name: Prepare production files
         run: |
           mkdir prod
+          # Copy only the required plugin files
           cp -r wp-rest-api-search.php index.php readme.txt build prod/
           cd prod
+          # Clean up unnecessary development files
           rm -rf src node_modules .gitignore .editorconfig package*.json .github
 
       - name: Get version from package.json
