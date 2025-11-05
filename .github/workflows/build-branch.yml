@@ -31,7 +31,7 @@ jobs:
         run: |
           mkdir prod
           # Copy only the required plugin files
-          cp -r wp-rest-api-search.php readme.md build prod/
+          cp -r wp-rest-api-search.php README.md build prod/
           cd prod
           # Clean up unnecessary development files
           rm -rf src node_modules .gitignore .editorconfig package*.json .github
